@@ -19,21 +19,13 @@ export class AuthService {
     });
     if (existingUser) throw new UnauthorizedException('Email already in use');
 
-    // Find or create default role
-    let role = await prisma.role.findFirst({ where: { name: 'User' } });
-    if (!role) {
-      role = await prisma.role.create({
-        data: { name: 'User', description: 'Default user role' },
-      });
-    }
-
     const hashedPassword = await bcrypt.hash(dto.password, 10);
     const user = await prisma.user.create({
       data: {
         email: dto.email,
         password: hashedPassword,
         name: dto.name,
-        roleId: role.id,
+        role: 'PARTICIPANT', // Use Enum value
       },
     });
 
@@ -75,20 +67,12 @@ export class AuthService {
 
     let user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
-      
-      let role = await prisma.role.findFirst({ where: { name: 'User' } });
-      if (!role) {
-        role = await prisma.role.create({
-          data: { name: 'User', description: 'Default user role' },
-        });
-      }
-
       user = await prisma.user.create({
         data: {
           email,
           name: name || 'Google User',
           password: '', 
-          roleId: role.id,
+          role: 'PARTICIPANT', // Use Enum value
         },
       });
     }
@@ -97,7 +81,7 @@ export class AuthService {
   }
 
   private generateToken(user: any) {
-    const payload = { sub: user.id, email: user.email };
+    const payload = { sub: user.id, email: user.email, role: user.role };
     const token = this.jwtService.sign(payload);
     return { accessToken: token, user };
   }
