@@ -10,7 +10,7 @@ import { AuthController } from './auth/auth.controller';
         name: "AUTH_SERVICE",
         transport: Transport.TCP,
         options: {
-          host: "127.0.0.1",
+          host: "auth",
           port: 3001,
         },
       },

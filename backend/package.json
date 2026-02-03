@@ -9,8 +9,6 @@
     "start": "nest start api-gateway",
     "start:dev": "nest start api-gateway --watch",
     "start:auth": "nest start auth --watch",
-    "start:orders": "nest start orders --watch",
-    "start:payment": "nest start payment --watch",
     "build": "nest build",
     "lint": "nest lint"
   },

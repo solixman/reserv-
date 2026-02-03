@@ -1,11 +1,13 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, ConflictException,} from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
+import { randomBytes } from 'crypto';
 import { JwtService } from '@nestjs/jwt';
 import { prisma } from '../lib/prisma';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { OAuth2Client } from 'google-auth-library';
 import { decode } from 'jsonwebtoken';
+import { Role } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -17,7 +19,7 @@ export class AuthService {
     const existingUser = await prisma.user.findUnique({
       where: { email: dto.email },
     });
-    if (existingUser) throw new UnauthorizedException('Email already in use');
+    if (existingUser) throw new ConflictException('Email already in use');
 
     const hashedPassword = await bcrypt.hash(dto.password, 10);
     const user = await prisma.user.create({
@@ -25,7 +27,7 @@ export class AuthService {
         email: dto.email,
         password: hashedPassword,
         name: dto.name,
-        role: 'PARTICIPANT', // Use Enum value
+        role: Role.PARTICIPANT,
       },
     });
 
@@ -63,16 +65,18 @@ export class AuthService {
 
     const { email, name, picture } = payload;
 
-    if (!email) throw new UnauthorizedException('Email not found in Google token');
+    if (!email)
+      throw new UnauthorizedException('Email not found in Google token');
 
     let user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
+      const randomPassword = randomBytes(32).toString('hex');
       user = await prisma.user.create({
         data: {
           email,
           name: name || 'Google User',
-          password: '', 
-          role: 'PARTICIPANT', // Use Enum value
+          password: await bcrypt.hash(randomPassword, 10), 
+          role: Role.PARTICIPANT,
         },
       });
     }
@@ -83,6 +87,7 @@ export class AuthService {
   private generateToken(user: any) {
     const payload = { sub: user.id, email: user.email, role: user.role };
     const token = this.jwtService.sign(payload);
-    return { accessToken: token, user };
+    const { password, ...userSafe } = user; 
+    return { accessToken: token, user: userSafe };
   }
 }

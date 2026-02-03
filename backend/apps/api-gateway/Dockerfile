@@ -1,30 +1,19 @@
-# Stage 1: Build
-FROM node:22-alpine AS builder
+FROM node:22-alpine
 WORKDIR /app
 
+# Copy package files
 COPY package*.json ./
 COPY apps/api-gateway/package*.json ./apps/api-gateway/
 
+# Install with --ignore-scripts to skip post-install
 RUN npm ci --legacy-peer-deps --ignore-scripts
 
+# Copy monorepo source
 COPY tsconfig*.json ./
 COPY nest-cli.json ./
 COPY apps ./apps
 
-RUN npm run build api-gateway
-
-# Stage 2: Runtime
-FROM node:22-alpine
-WORKDIR /app
-
-COPY package*.json ./
-COPY apps/api-gateway/package*.json ./apps/api-gateway/
-
-RUN npm ci --legacy-peer-deps --ignore-scripts --only=production
-
-COPY --from=builder /app/dist ./dist
-
 EXPOSE 3000
 
-CMD ["node", "dist/apps/api-gateway/main.js"]
-
+# Run in watch mode
+CMD ["npm", "run", "start:dev"]

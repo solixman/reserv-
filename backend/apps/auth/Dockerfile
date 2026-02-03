@@ -21,7 +21,7 @@ WORKDIR /app
 COPY package*.json ./
 COPY apps/auth/package*.json ./apps/auth/
 
-RUN npm ci --legacy-peer-deps --ignore-scripts --only=production
+RUN npm ci --legacy-peer-deps --ignore-scripts
 
 # Copy entire Prisma directory structure
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
@@ -31,4 +31,4 @@ COPY --from=builder /app/dist ./dist
 
 EXPOSE 3001
 
-CMD ["node", "dist/apps/auth/main.js"]
+CMD ["npm","run", "start:dev" ,"auth"]
