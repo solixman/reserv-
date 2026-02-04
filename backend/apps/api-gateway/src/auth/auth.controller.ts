@@ -19,11 +19,19 @@ export class AuthController {
 
   @Post('login')
   async login(@Body() loginDto: LoginDto) {
+    try{
     return this.authClient.send('login', loginDto);
+     } catch (error) {
+      throw new HttpException(error.message , error.statusCode || 500);
+    }
   }
 
   @Post('google')
   async googleLogin(@Body() googleLoginDto: GoogleLoginDto) {
+    try{
     return this.authClient.send('google-login', googleLoginDto);
+     } catch (error) {
+      throw new HttpException(error.message , error.statusCode || 500);
+    }
   }
 }
