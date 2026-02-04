@@ -47,13 +47,8 @@ export class AuthService {
   async googleLogin(idToken: string) {
     const clientId = process.env.GOOGLE_CLIENT_ID;
     if (!clientId) throw new Error('GOOGLE_CLIENT_ID not configured');
-    // DEBUG: Log payload to see the actual audience BEFORE verification fails
+   
     const decoded = decode(idToken) as any;
-    console.log('--- DEBUG AUDIENCE CHECK ---');
-    console.log('Env GOOGLE_CLIENT_ID:', clientId);
-    console.log('Token aud:', decoded?.aud);
-    console.log('Match?', clientId === decoded?.aud);
-    console.log('----------------------------');
 
     const ticket = await this.googleClient.verifyIdToken({
       idToken,
