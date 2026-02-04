@@ -1,4 +1,4 @@
-import { Body, Controller, Inject, Post } from '@nestjs/common';
+import { Body, Controller, HttpException, Inject, Post } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
@@ -10,7 +10,11 @@ export class AuthController {
 
   @Post('register')
   async register(@Body() registerDto: RegisterDto) {
-    return this.authClient.send('register', registerDto);
+    try {
+      return this.authClient.send('register', registerDto);
+    } catch (error) {
+      throw new HttpException(error.message , error.statusCode || 500);
+    }
   }
 
   @Post('login')

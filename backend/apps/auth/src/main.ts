@@ -1,3 +1,4 @@
+import { AllExceptionsFilter } from './../../../common/filters/all-exceptions.filter';
 import { NestFactory } from '@nestjs/core';
 import { AuthModule } from './auth.module';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
@@ -8,12 +9,14 @@ async function bootstrap() {
     transport: Transport.TCP,
     options: { host: 'auth', port: 3001 },
   });
-  
+
   app.useGlobalPipes(new ValidationPipe({
     whitelist: true,
     forbidNonWhitelisted: true,
     transform: true,
   }));
+
+  app.useGlobalFilters(new AllExceptionsFilter());
 
   await app.listen();
   console.log('Auth microservice running on TCP port 3001');
