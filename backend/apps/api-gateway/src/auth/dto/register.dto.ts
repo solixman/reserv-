@@ -1,11 +1,19 @@
-export class RegisterDto {
-  email: string;
-  password: string;
-  name: string;
+import { IsEmail, IsNotEmpty, IsString } from "class-validator";
 
-  constructor(email: string, password: string, name: string) {
-    this.email = email;
-    this.password = password;
-    this.name = name;
+export class RegisterDto {
+  @IsEmail()
+    email: string;
+    
+    @IsNotEmpty()
+    password: string;
+
+    @IsNotEmpty()
+    @IsString()
+    name: string;
+
+  constructor(email:string,password:string,name:string){
+    this.email=email;
+    this.password=password;
+    this.name=name;
   }
 }

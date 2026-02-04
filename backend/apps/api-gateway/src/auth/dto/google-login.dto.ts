@@ -1,7 +1,14 @@
-export class GoogleLoginDto {
-  idToken: string;
+import {IsNotEmpty, IsString} from 'class-validator';
 
-  constructor(idToken: string) {
-    this.idToken = idToken;
+
+export class GoogleLoginDto {
+  
+  @IsNotEmpty()
+  @IsString()
+  idToken: string; 
+  
+
+  constructor(idToken:string){
+    this.idToken=idToken
   }
 }

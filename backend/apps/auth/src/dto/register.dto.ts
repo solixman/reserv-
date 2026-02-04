@@ -1,7 +1,15 @@
+import { IsEmail, IsNotEmpty, IsString } from "class-validator";
+
 export class RegisterDto {
-  email: string;
-  password: string;
-  name: string;
+  @IsEmail()
+    email: string;
+    
+    @IsNotEmpty()
+    password: string;
+
+    @IsNotEmpty()
+    @IsString()
+    name: string;
 
   constructor(email:string,password:string,name:string){
     this.email=email;
