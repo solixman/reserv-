@@ -10,5 +10,5 @@ COPY . .
 
 EXPOSE 3000
 
-# Run Next.js in dev mode
+
 CMD ["npm", "run", "dev"]

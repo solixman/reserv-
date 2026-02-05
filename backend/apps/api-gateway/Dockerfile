@@ -12,6 +12,7 @@ RUN npm ci --legacy-peer-deps --ignore-scripts
 COPY tsconfig*.json ./
 COPY nest-cli.json ./
 COPY apps ./apps
+COPY common ./common
 
 EXPOSE 3000
 
