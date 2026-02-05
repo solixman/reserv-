@@ -45,6 +45,15 @@
       "compilerOptions": {
         "tsConfigPath": "apps/auth/tsconfig.app.json"
       }
+    },
+    "event-reservation-service": {
+      "type": "application",
+      "root": "apps/event-reservation-service",
+      "entryFile": "main",
+      "sourceRoot": "apps/event-reservation-service/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/event-reservation-service/tsconfig.app.json"
+      }
     }
   }
 }
