@@ -10,7 +10,8 @@
     "start:dev": "nest start api-gateway --watch",
     "start:auth": "nest start auth --watch",
     "build": "nest build",
-    "lint": "nest lint"
+    "lint": "nest lint",
+    "type": "module"
   },
   "dependencies": {
     "@nestjs/common": "^10.4.22",
