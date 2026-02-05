@@ -10,6 +10,7 @@ RUN npm ci --legacy-peer-deps --ignore-scripts
 COPY tsconfig*.json ./
 COPY nest-cli.json ./
 COPY apps ./apps
+COPY common ./common
 
 RUN npx prisma generate --schema=apps/auth/prisma/schema.prisma
 RUN npm run build auth
