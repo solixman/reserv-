@@ -5,8 +5,8 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider = "prisma-client-js"
+  output   = "../../../node_modules/@prisma/event-client"
 }
 
 datasource db {
@@ -36,7 +36,7 @@ model Event {
   endDate     DateTime
   capacity    Int
   status      EventStatus
-  image       String
+  image       String?
 
   reservations Reservation[]
 }

@@ -1,10 +1,13 @@
-import "dotenv/config";
-import { PrismaPg } from '@prisma/adapter-pg'
-import { PrismaClient } from '../generated/prisma/client'
+import { Pool } from 'pg';
+import { PrismaPg } from '@prisma/adapter-pg';
+import { PrismaClient } from '@prisma/event-client';
 
-const connectionString = `${process.env.DATABASE_URL}`
+const connectionString = process.env.DATABASE_URL;
 
-const adapter = new PrismaPg({ connectionString })
-const prisma = new PrismaClient({ adapter })
+const pool = new Pool({ connectionString });
+pool.on('error', (err) => console.error('PostgreSQL Pool Error:', err));
 
-export { prisma }
+const adapter = new PrismaPg(pool);
+const prisma = new PrismaClient({ adapter });
+
+export { prisma };

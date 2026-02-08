@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException, ConflictException,} from '@nestjs/common';
+import { Injectable, UnauthorizedException, ConflictException, } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { randomBytes } from 'crypto';
 import { JwtService } from '@nestjs/jwt';
@@ -13,7 +13,7 @@ import { Role } from '@prisma/client';
 export class AuthService {
   private googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
-  constructor(private readonly jwtService: JwtService) {}
+  constructor(private readonly jwtService: JwtService) { }
 
   async register(dto: RegisterDto) {
     const existingUser = await prisma.user.findUnique({
@@ -47,7 +47,7 @@ export class AuthService {
   async googleLogin(idToken: string) {
     const clientId = process.env.GOOGLE_CLIENT_ID;
     if (!clientId) throw new Error('GOOGLE_CLIENT_ID not configured');
-   
+
     const decoded = decode(idToken) as any;
 
     const ticket = await this.googleClient.verifyIdToken({
@@ -70,7 +70,7 @@ export class AuthService {
         data: {
           email,
           name: name || 'Google User',
-          password: await bcrypt.hash(randomPassword, 10), 
+          password: await bcrypt.hash(randomPassword, 10),
           role: Role.PARTICIPANT,
         },
       });
@@ -82,7 +82,7 @@ export class AuthService {
   private generateToken(user: any) {
     const payload = { sub: user.id, email: user.email, role: user.role };
     const token = this.jwtService.sign(payload);
-    const { password, ...userSafe } = user; 
+    const { password, ...userSafe } = user;
     return { accessToken: token, user: userSafe };
   }
 }

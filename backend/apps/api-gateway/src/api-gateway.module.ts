@@ -3,10 +3,15 @@ import { ApiGatewayController } from './api-gateway.controller';
 import { ApiGatewayService } from './api-gateway.service';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { AuthController } from './auth/auth.controller';
+import { EventsController } from './events/events.controller';
+import { JwtStrategy } from './auth/guards/jwt.strategy';
+import { PassportModule } from '@nestjs/passport';
 
 @Module({
-  imports: [ClientsModule.register([
-    {
+  imports: [
+    PassportModule,
+    ClientsModule.register([
+      {
         name: "AUTH_SERVICE",
         transport: Transport.TCP,
         options: {
@@ -14,8 +19,16 @@ import { AuthController } from './auth/auth.controller';
           port: 3001,
         },
       },
-  ])],
-  controllers: [ApiGatewayController, AuthController],
-  providers: [ApiGatewayService],
+      {
+        name: "EVENT_SERVICE",
+        transport: Transport.TCP,
+        options: {
+          host: "reserve-event",
+          port: 3002,
+        },
+      },
+    ])],
+  controllers: [ApiGatewayController, AuthController, EventsController],
+  providers: [ApiGatewayService, JwtStrategy],
 })
-export class ApiGatewayModule {}
+export class ApiGatewayModule { }
