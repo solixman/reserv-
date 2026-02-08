@@ -10,6 +10,10 @@
     "start:dev": "nest start api-gateway --watch",
     "start:auth": "nest start auth --watch",
     "start:event": "nest start event-reservation-service --watch",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:cov": "jest --coverage",
+    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "build": "nest build",
     "lint": "nest lint",
     "type": "module"
