@@ -266,8 +266,16 @@ export class ReservationService {
     async remove(id: number) {
         await this.findOne(id);
 
-        return this.prisma.reservation.delete({
-            where: { id },
+        return this.prisma.$transaction(async (tx) => {
+            await tx.ticket.deleteMany({
+                where: {
+                    reservationId: id,
+                },
+            });
+
+            return await tx.reservation.delete({
+                where: { id },
+            });
         });
     }
 

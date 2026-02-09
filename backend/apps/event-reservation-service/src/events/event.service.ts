@@ -45,8 +45,24 @@ export class EventService {
     }
 
     async remove(id: number) {
-        return this.prisma.event.delete({
-            where: { id },
+        return this.prisma.$transaction(async (tx) => {
+            await tx.ticket.deleteMany({
+                where: {
+                    reservation: {
+                        eventId: id,
+                    },
+                },
+            });
+
+            await tx.reservation.deleteMany({
+                where: {
+                    eventId: id,
+                },
+            });
+
+            return await tx.event.delete({
+                where: { id },
+            });
         });
     }
 
