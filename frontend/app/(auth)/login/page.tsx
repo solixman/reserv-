@@ -6,7 +6,10 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { authApi } from '@/lib/api/auth';
 
+import { useAuth } from '@/contexts/AuthContext';
+
 export default function LoginPage() {
+  const { login } = useAuth();
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -21,51 +24,27 @@ export default function LoginPage() {
     setSuccess('');
 
     try {
-      // Wait for the backend response
       const res = await authApi.login({ email, password });
       
-      // Validate response structure
       if (!res || !res.accessToken || !res.user || !res.user.role) {
         throw new Error('Invalid response from server');
       }
       
-      // Show success message
       setSuccess('Login successful! Redirecting...');
       
-      // Store auth data
-      localStorage.setItem('accessToken', res.accessToken);
-      localStorage.setItem('user', JSON.stringify(res.user));
+      // Use the global login function
+      login(res.accessToken, res.user as any);
 
-      // Determine redirect based on role (ADMIN or PARTICIPANT)
       const userRole = res.user.role;
-      
-      
       if (userRole === 'ADMIN') {
         router.replace('/admin/events');
-      } else if (userRole === 'PARTICIPANT') {
-        router.replace('/events');
       } else {
         router.replace('/events');
       }
 
     } catch (err: any) {
       console.error("Login failed:", err);
-      
-
-      let errorMessage = 'An error occurred. Please try again.';
-      
-      if (err.message) {
-        if (err.message.toLowerCase().includes('invalid credentials')) {
-          errorMessage = 'Invalid email or password';
-        } else if (err.message.toLowerCase().includes('email')) {
-          errorMessage = err.message;
-        } else if (err.message.toLowerCase().includes('password')) {
-          errorMessage = err.message;
-        } else {
-          errorMessage = err.message;
-        }
-      }
-      
+      let errorMessage = err.message || 'An error occurred. Please try again.';
       setError(errorMessage);
       setLoading(false);
     }

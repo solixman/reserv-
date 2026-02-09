@@ -1,4 +1,4 @@
-import { Event } from "@/lib/api/events";
+import { Event } from "@/lib/types/event";
 import Link from "next/link";
 
 interface EventCardProps {
@@ -7,7 +7,7 @@ interface EventCardProps {
 }
 
 export function EventCard({ event, isAdmin }: EventCardProps) {
-  const statusColors = {
+  const statusColors: Record<string, string> = {
     DRAFT: "bg-zinc-500/20 text-zinc-400 border-zinc-500/30",
     PUBLISHED: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
     CANCELED: "bg-red-500/20 text-red-400 border-red-500/30",
@@ -54,9 +54,9 @@ export function EventCard({ event, isAdmin }: EventCardProps) {
 
         <div className="flex gap-3">
           {isAdmin ? (
-             <Link href={`/dashboard/events/${event.id}/edit`} className="flex-1 bg-zinc-800 hover:bg-zinc-700 text-white text-center py-2.5 rounded-lg text-sm font-medium transition-colors border border-white/5">
-                Edit
-             </Link>
+             <button onClick={() => {}} className="flex-1 bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-400 text-center py-2.5 rounded-lg text-sm font-medium transition-colors border border-indigo-500/30">
+                Manage
+             </button>
           ) : (
              <Link href={`/events/${event.id}`} className="flex-1 bg-white hover:bg-zinc-200 text-black text-center py-2.5 rounded-lg text-sm font-bold transition-colors">
                 View Details

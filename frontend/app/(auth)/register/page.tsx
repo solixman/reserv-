@@ -6,7 +6,10 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { authApi } from '@/lib/api/auth';
 
+import { useAuth } from '@/contexts/AuthContext';
+
 export default function RegisterPage() {
+  const { login } = useAuth();
   const router = useRouter();
   const [formData, setFormData] = useState({
     name: '',
@@ -24,54 +27,27 @@ export default function RegisterPage() {
     setSuccess('');
 
     try {
-      // Wait for the backend response
       const res = await authApi.register(formData);
       
-      // Validate response structure
       if (!res || !res.accessToken || !res.user || !res.user.role) {
         throw new Error('Invalid response from server');
       }
       
-      // Show success message
       setSuccess('Account created successfully! Logging you in...');
       
-      // Store auth data
-      localStorage.setItem('accessToken', res.accessToken);
-      localStorage.setItem('user', JSON.stringify(res.user));
+      // Use global login function with type cast
+      login(res.accessToken, res.user as any);
       
-      // Determine redirect based on role
       const userRole = res.user.role;
-      
-      // Use router.replace for immediate redirect
       if (userRole === 'ADMIN') {
         router.replace('/admin/events');
-      } else if (userRole === 'PARTICIPANT') {
-        router.replace('/events');
       } else {
         router.replace('/events');
       }
 
     } catch (err: any) {
       console.error("Registration failed:", err);
-      
-      // Handle different error messages from backend
-      let errorMessage = 'Registration failed. Please try again.';
-      
-      if (err.message) {
-        // Backend returns specific error messages like "Email already in use"
-        if (err.message.toLowerCase().includes('email already in use')) {
-          errorMessage = 'This email is already registered. Please login instead.';
-        } else if (err.message.toLowerCase().includes('email')) {
-          errorMessage = err.message;
-        } else if (err.message.toLowerCase().includes('password')) {
-          errorMessage = err.message;
-        } else if (err.message.toLowerCase().includes('name')) {
-          errorMessage = err.message;
-        } else {
-          errorMessage = err.message;
-        }
-      }
-      
+      let errorMessage = err.message || 'Registration failed. Please try again.';
       setError(errorMessage);
       setLoading(false);
     }

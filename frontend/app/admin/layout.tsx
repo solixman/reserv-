@@ -1,48 +1,25 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { useEffect } from 'react';
 
 export default function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const { user, token, logout, isLoading } = useAuth();
   const router = useRouter();
-  const [authorized, setAuthorized] = useState(false);
-  const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
-    // Check for token
-    const token = localStorage.getItem('accessToken');
-    if (!token) {
-      router.replace('/login');
-      return;
+    if (!isLoading && (!token || user?.role !== 'ADMIN')) {
+      router.replace(token ? '/events' : '/login');
     }
+  }, [user, token, isLoading, router]);
 
-    // Check for ADMIN role
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      try {
-        const parsedUser = JSON.parse(storedUser);
-        if (parsedUser.role !== 'ADMIN') {
-          router.replace('/events'); // Redirect non-admins
-          return;
-        }
-        setUser(parsedUser);
-        setAuthorized(true);
-      } catch (e) {
-        console.error("Auth check failed", e);
-        localStorage.clear();
-        router.replace('/login');
-      }
-    } else {
-      router.replace('/login');
-    }
-  }, [router]);
-
-  if (!authorized) {
+  if (isLoading || !user || user.role !== 'ADMIN') {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
@@ -55,7 +32,6 @@ export default function AdminLayout({
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white">
-      {/* Top Navigation Bar */}
       <header className="border-b border-white/10 bg-slate-950/50 backdrop-blur-xl sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-8">
@@ -70,6 +46,12 @@ export default function AdminLayout({
                 Events
               </Link>
               <Link 
+                href="/admin/reservations" 
+                className="px-4 py-2 rounded-lg hover:bg-white/5 text-slate-300 hover:text-white transition-all font-medium"
+              >
+                Reservations
+              </Link>
+              <Link 
                 href="/events" 
                 className="px-4 py-2 rounded-lg hover:bg-white/5 text-slate-300 hover:text-white transition-all font-medium"
               >
@@ -80,13 +62,10 @@ export default function AdminLayout({
           
           <div className="flex items-center gap-4">
             <div className="text-sm text-slate-400 hidden md:block">
-              {user?.name}
+              {user.name}
             </div>
             <button
-              onClick={() => {
-                localStorage.clear();
-                router.replace('/login');
-              }}
+              onClick={logout}
               className="px-4 py-2 rounded-lg bg-red-500/10 border border-red-500/20 hover:bg-red-500/20 text-red-400 text-sm font-medium transition-all"
             >
               Logout
@@ -95,10 +74,10 @@ export default function AdminLayout({
         </div>
       </header>
 
-      {/* Main Content */}
       <main className="max-w-7xl mx-auto px-6 py-8">
         {children}
       </main>
     </div>
   );
 }
+

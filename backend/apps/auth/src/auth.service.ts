@@ -79,6 +79,20 @@ export class AuthService {
     return this.generateToken(user);
   }
 
+  async findOne(id: string) {
+    return prisma.user.findUnique({
+      where: { id },
+      select: { id: true, email: true, name: true, role: true }
+    });
+  }
+
+  async findMany(ids: string[]) {
+    return prisma.user.findMany({
+      where: { id: { in: ids } },
+      select: { id: true, email: true, name: true, role: true }
+    });
+  }
+
   private generateToken(user: any) {
     const payload = { sub: user.id, email: user.email, role: user.role, name: user.name };
     const token = this.jwtService.sign(payload);

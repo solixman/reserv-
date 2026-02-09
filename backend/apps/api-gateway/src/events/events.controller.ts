@@ -19,7 +19,9 @@ export class EventsController {
         try {
             return await firstValueFrom(this.eventClient.send('createEvent', createEventDto));
         } catch (error) {
-            throw new HttpException(error, HttpStatus.BAD_REQUEST);
+            const statusCode = error?.error?.statusCode || error?.statusCode || HttpStatus.BAD_REQUEST;
+            const message = error?.error?.message || error?.message || 'Failed to create event';
+            throw new HttpException(message, statusCode);
         }
     }
 
@@ -28,7 +30,9 @@ export class EventsController {
         try {
             return await firstValueFrom(this.eventClient.send('findAllEvents', {}));
         } catch (error) {
-            throw new HttpException(error, HttpStatus.BAD_REQUEST);
+            const statusCode = error?.error?.statusCode || error?.statusCode || HttpStatus.INTERNAL_SERVER_ERROR;
+            const message = error?.error?.message || error?.message || 'Failed to fetch events';
+            throw new HttpException(message, statusCode);
         }
     }
 
@@ -37,7 +41,9 @@ export class EventsController {
         try {
             return await firstValueFrom(this.eventClient.send('findOneEvent', +id));
         } catch (error) {
-            throw new HttpException(error, HttpStatus.NOT_FOUND);
+            const statusCode = error?.error?.statusCode || error?.statusCode || HttpStatus.NOT_FOUND;
+            const message = error?.error?.message || error?.message || 'Event not found';
+            throw new HttpException(message, statusCode);
         }
     }
 
@@ -48,7 +54,9 @@ export class EventsController {
         try {
             return await firstValueFrom(this.eventClient.send('updateEvent', { ...updateEventDto, id: +id }));
         } catch (error) {
-            throw new HttpException(error, HttpStatus.BAD_REQUEST);
+            const statusCode = error?.error?.statusCode || error?.statusCode || HttpStatus.BAD_REQUEST;
+            const message = error?.error?.message || error?.message || 'Failed to update event';
+            throw new HttpException(message, statusCode);
         }
     }
 
@@ -59,7 +67,9 @@ export class EventsController {
         try {
             return await firstValueFrom(this.eventClient.send('removeEvent', +id));
         } catch (error) {
-            throw new HttpException(error, HttpStatus.BAD_REQUEST);
+            const statusCode = error?.error?.statusCode || error?.statusCode || HttpStatus.BAD_REQUEST;
+            const message = error?.error?.message || error?.message || 'Failed to delete event';
+            throw new HttpException(message, statusCode);
         }
     }
 }

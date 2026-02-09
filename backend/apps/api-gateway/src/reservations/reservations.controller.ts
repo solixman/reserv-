@@ -25,7 +25,10 @@ import { firstValueFrom } from 'rxjs';
 @Controller('reservations')
 @UseFilters(AllExceptionsFilter)
 export class ReservationsController {
-    constructor(@Inject('EVENT_SERVICE') private readonly eventClient: ClientProxy) { }
+    constructor(
+        @Inject('EVENT_SERVICE') private readonly eventClient: ClientProxy,
+        @Inject('AUTH_SERVICE') private readonly authClient: ClientProxy
+    ) { }
 
     /**
      * Create a new reservation (Authenticated users)
@@ -59,7 +62,31 @@ export class ReservationsController {
             if (req.query.userId) {
                 filters.userId = req.query.userId;
             }
-            return await firstValueFrom(this.eventClient.send('findAllReservations', filters));
+            const reservations = await firstValueFrom(this.eventClient.send('findAllReservations', filters));
+
+            // Enrich with user names if possible
+            if (Array.isArray(reservations) && reservations.length > 0) {
+                const userIds = [...new Set(reservations.map(r => r.userId))].filter(Boolean);
+                let userMap = {};
+                try {
+                    const users = await firstValueFrom(this.authClient.send('findUsersByIds', userIds));
+                    if (Array.isArray(users)) {
+                        userMap = users.reduce((acc, user) => {
+                            acc[user.id] = user.name;
+                            return acc;
+                        }, {});
+                    }
+                } catch (e) {
+                    console.error('Failed to enrich reservations with user names:', e);
+                }
+
+                return reservations.map(res => ({
+                    ...res,
+                    userName: userMap[res.userId] || 'Unknown User'
+                }));
+            }
+
+            return reservations;
         } catch (error) {
             const statusCode = error?.error?.statusCode || error?.statusCode || HttpStatus.INTERNAL_SERVER_ERROR;
             const message = error?.error?.message || error?.message || 'Failed to fetch reservations';

@@ -1,6 +1,7 @@
 
 
-const API_URL = typeof window === 'undefined' ? 'http://api-gateway:3000' : 'http://localhost:3000';
+const API_URL = typeof window === 'undefined' ? 'http://api-gateway:3000' : `${window.location.protocol}//${window.location.hostname}:3000`;
+if (typeof window !== 'undefined') console.log('[API Auth] Base URL:', API_URL);
 
 
 export interface RegisterDto {

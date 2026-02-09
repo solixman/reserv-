@@ -7,23 +7,33 @@ import { GoogleLoginDto } from './dto/google-login.dto';
 
 @Controller()
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService) { }
 
-  
+
   @MessagePattern('register')
   async register(@Payload() data: RegisterDto) {
     return this.authService.register(data);
   }
 
-  
+
   @MessagePattern('login')
   async login(@Payload() data: LoginDto) {
     return this.authService.login(data);
   }
 
-  
+
   @MessagePattern('google-login')
   async googleLogin(@Payload() data: GoogleLoginDto) {
     return this.authService.googleLogin(data.idToken);
+  }
+
+  @MessagePattern('findOneUser')
+  async findOne(@Payload() id: string) {
+    return this.authService.findOne(id);
+  }
+
+  @MessagePattern('findUsersByIds')
+  async findMany(@Payload() ids: string[]) {
+    return this.authService.findMany(ids);
   }
 }

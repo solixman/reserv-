@@ -84,7 +84,7 @@ export class ReservationService {
     }
 
     async findAll(filters?: { eventId?: number; userId?: string }) {
-        const where: any = {};
+        const where: Record<string, any> = {};
 
         if (filters?.eventId) {
             where.eventId = filters.eventId;
@@ -156,12 +156,12 @@ export class ReservationService {
     }
 
     async update(id: number, updateReservationDto: UpdateReservationDto) {
-        const reservation = await this.findOne(id);
+        await this.findOne(id);
 
         return this.prisma.reservation.update({
             where: { id },
             data: {
-                status: updateReservationDto.status,
+                status: updateReservationDto.status as ReservationStatus,
             },
             include: {
                 event: true,
@@ -175,7 +175,7 @@ export class ReservationService {
 
         if (reservation.status !== ReservationStatus.PENDING) {
             throw new InvalidReservationStatusException(
-                reservation.status,
+                reservation.status as ReservationStatus,
                 'confirm'
             );
         }
@@ -216,7 +216,7 @@ export class ReservationService {
 
         if (reservation.status !== ReservationStatus.PENDING) {
             throw new InvalidReservationStatusException(
-                reservation.status,
+                reservation.status as ReservationStatus,
                 'refuse'
             );
         }
@@ -246,7 +246,7 @@ export class ReservationService {
                 reservation.status !== ReservationStatus.CONFIRMED
             ) {
                 throw new InvalidReservationStatusException(
-                    reservation.status,
+                    reservation.status as ReservationStatus,
                     'cancel'
                 );
             }
@@ -264,7 +264,7 @@ export class ReservationService {
     }
 
     async remove(id: number) {
-        const reservation = await this.findOne(id);
+        await this.findOne(id);
 
         return this.prisma.reservation.delete({
             where: { id },
@@ -298,8 +298,8 @@ export class ReservationService {
         ).length;
 
         const activeReservations = pending + confirmed;
-        const availableSpots = event.capacity - confirmed;
-        const fillRate = event.capacity > 0 ? (confirmed / event.capacity) * 100 : 0;
+        const availableSpots = event.capacity - activeReservations;
+        const fillRate = event.capacity > 0 ? (activeReservations / event.capacity) * 100 : 0;
 
         return {
             eventId,
@@ -311,7 +311,7 @@ export class ReservationService {
             refused,
             canceled,
             activeReservations,
-            availableSpots,
+            availableSpots: Math.max(0, availableSpots),
             fillRate: Math.round(fillRate * 100) / 100,
         };
     }
@@ -328,7 +328,7 @@ export class ReservationService {
         }
 
         if (reservation.status !== ReservationStatus.CONFIRMED) {
-            throw new TicketNotAvailableException(reservationId, reservation.status);
+            throw new TicketNotAvailableException(reservationId, reservation.status as ReservationStatus);
         }
 
         return true;
@@ -347,7 +347,7 @@ export class ReservationService {
         }
 
         const doc = new PDFDocument();
-        const chunks: any[] = [];
+        const chunks: Buffer[] = [];
 
         doc.on('data', (chunk) => chunks.push(chunk));
 
@@ -356,7 +356,7 @@ export class ReservationService {
                 const pdfBuffer = Buffer.concat(chunks);
                 const pdfBase64 = pdfBuffer.toString('base64');
 
-                let ticket = await this.prisma.ticket.findFirst({
+                const ticket = await this.prisma.ticket.findFirst({
                     where: { reservationId }
                 });
 

@@ -1,8 +1,6 @@
-
 import { CreateEventDto, UpdateEventDto, Event } from '../types/event';
 
-
-const API_URL = typeof window === 'undefined' ? 'http://api-gateway:3000' : 'http://localhost:3000';
+const API_URL = typeof window === 'undefined' ? 'http://api-gateway:3000' : `${window.location.protocol}//${window.location.hostname}:3000`;
 
 class EventService {
     private async request<T>(endpoint: string, method: string = 'GET', body?: any, token?: string): Promise<T> {
@@ -27,7 +25,19 @@ class EventService {
         const data = await res.json();
 
         if (!res.ok) {
-            throw new Error(data.message || 'An error occurred');
+            let errorMessage = 'An error occurred';
+            if (data) {
+                if (typeof data.message === 'string') {
+                    errorMessage = data.message;
+                } else if (Array.isArray(data.message)) {
+                    errorMessage = data.message.join(', ');
+                } else if (typeof data === 'string') {
+                    errorMessage = data;
+                } else if (data.error) {
+                    errorMessage = data.error;
+                }
+            }
+            throw new Error(errorMessage);
         }
 
         return data;

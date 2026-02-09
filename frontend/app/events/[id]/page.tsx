@@ -2,6 +2,7 @@
 import { eventApi } from "@/lib/api/events";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { BookingButton } from "@/components/events/BookingButton";
 
 interface PageProps {
   params: { id: string };
@@ -117,9 +118,7 @@ export default async function EventDetailsPage({ params }: PageProps) {
                         </div>
                     </div>
                     
-                    <button className="w-full bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-indigo-400 hover:to-blue-500 text-white font-bold py-4 rounded-xl transition-all shadow-[0_0_20px_rgba(99,102,241,0.3)] hover:shadow-[0_0_30px_rgba(99,102,241,0.5)] transform hover:-translate-y-0.5 active:scale-[0.98]">
-                        Book Your Spot Now
-                    </button>
+                    <BookingButton eventId={event.id} capacity={event.capacity} />
                     <p className="text-center text-xs text-slate-500 mt-6 flex items-center justify-center gap-2">
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
                         Secure 256-bit encrypted transaction

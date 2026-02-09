@@ -7,14 +7,16 @@ import { lastValueFrom } from 'rxjs';
 
 @Controller('auth')
 export class AuthController {
-  constructor(@Inject('AUTH_SERVICE') private authClient: ClientProxy) {}
+  constructor(@Inject('AUTH_SERVICE') private authClient: ClientProxy) { }
 
   @Post('register')
   async register(@Body() registerDto: RegisterDto) {
     try {
       return await lastValueFrom(this.authClient.send('register', registerDto));
     } catch (error) {
-      throw new HttpException(error.message, error.statusCode || 500);
+      const statusCode = error?.error?.statusCode || error?.statusCode || 400;
+      const message = error?.error?.message || error?.message || 'Registration failed';
+      throw new HttpException(message, statusCode);
     }
   }
 
@@ -23,7 +25,9 @@ export class AuthController {
     try {
       return await lastValueFrom(this.authClient.send('login', loginDto));
     } catch (error) {
-      throw new HttpException(error.message, error.statusCode || 500);
+      const statusCode = error?.error?.statusCode || error?.statusCode || 401;
+      const message = error?.error?.message || error?.message || 'Login failed';
+      throw new HttpException(message, statusCode);
     }
   }
 
@@ -32,7 +36,9 @@ export class AuthController {
     try {
       return await lastValueFrom(this.authClient.send('google-login', googleLoginDto));
     } catch (error) {
-      throw new HttpException(error.message, error.statusCode || 500);
+      const statusCode = error?.error?.statusCode || error?.statusCode || 401;
+      const message = error?.error?.message || error?.message || 'Google login failed';
+      throw new HttpException(message, statusCode);
     }
   }
 }
