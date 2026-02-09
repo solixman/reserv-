@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, Inject, UseGuards, UseFilters, HttpException, HttpStatus } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { CreateEventDto, UpdateEventDto } from 'apps/event-reservation-service/src/dto/event.dto';
+import { CreateEventDto, UpdateEventDto } from 'apps/event-reservation-service/src/events/event.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/guards/roles.decorator';

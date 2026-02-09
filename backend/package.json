@@ -38,6 +38,7 @@
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
     "passport-jwt": "^4.0.1",
+    "pdfkit": "^0.17.2",
     "pg": "^8.18.0",
     "reflect-metadata": "^0.1.14",
     "rxjs": "^7.8.2"
@@ -56,6 +57,7 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^20.19.30",
     "@types/passport-google-oauth20": "^2.0.14",
+    "@types/pdfkit": "^0.17.4",
     "@types/pg": "^8.16.0",
     "@typescript-eslint/eslint-plugin": "^8.54.0",
     "@typescript-eslint/parser": "^8.54.0",

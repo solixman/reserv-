@@ -4,6 +4,7 @@ import { ApiGatewayService } from './api-gateway.service';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { AuthController } from './auth/auth.controller';
 import { EventsController } from './events/events.controller';
+import { ReservationsController } from './reservations/reservations.controller';
 import { JwtStrategy } from './auth/guards/jwt.strategy';
 import { PassportModule } from '@nestjs/passport';
 
@@ -28,7 +29,7 @@ import { PassportModule } from '@nestjs/passport';
         },
       },
     ])],
-  controllers: [ApiGatewayController, AuthController, EventsController],
+  controllers: [ApiGatewayController, AuthController, EventsController, ReservationsController],
   providers: [ApiGatewayService, JwtStrategy],
 })
 export class ApiGatewayModule { }

@@ -37,8 +37,8 @@ export class AuthService {
   async login(dto: LoginDto) {
     const user = await prisma.user.findUnique({ where: { email: dto.email } });
     if (!user) throw new UnauthorizedException('Invalid credentials');
-    
-    console.log('here in login service',user);
+
+    console.log('here in login service', user);
     const valid = await bcrypt.compare(dto.password, user.password);
     if (!valid) throw new UnauthorizedException('Invalid credentials');
     return this.generateToken(user);
@@ -80,7 +80,7 @@ export class AuthService {
   }
 
   private generateToken(user: any) {
-    const payload = { sub: user.id, email: user.email, role: user.role };
+    const payload = { sub: user.id, email: user.email, role: user.role, name: user.name };
     const token = this.jwtService.sign(payload);
     const { password, ...userSafe } = user;
     return { accessToken: token, user: userSafe };

@@ -44,7 +44,7 @@ model Event {
 model Reservation {
   id        Int                @id @default(autoincrement())
   status    ReservationStatus
-  userId    Int
+  userId    String
   eventId   Int
 
   event     Event              @relation(fields: [eventId], references: [id])
